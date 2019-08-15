@@ -70,12 +70,20 @@ class Sentence:
         self.name = name
         self.full_path = os.path.join(directory_path, name)
 
+        if os.path.exists(self.full_path + '.WAV'):
+            self.extensions = {ext:ext for ext in ['.WAV', '.PHN', '.WRD']}
+        elif os.path.exists(self.full_path + '.wav'):
+            self.extensions = {ext:ext.lower() for ext in ['.WAV', '.PHN', '.WRD']}
+        else:
+            pass
+            # error
+
     def __str__(self) -> str:
         return '{}'.format(self.name,)
 
     @lazy_property
     def _raw_data_tuple(self) -> Tuple[np.ndarray, int]:
-        return sf.read(self.full_path + '.WAV')
+        return sf.read(self.full_path + self.extensions['.WAV'])
 
     @lazy_property
     def raw_audio(self) -> np.ndarray:
@@ -87,11 +95,11 @@ class Sentence:
 
     @lazy_property
     def words_fullfreq(self) -> NameRangeSequence:
-        return NameRangeSequence.read_words_from(self.full_path + '.WRD')
+        return NameRangeSequence.read_words_from(self.full_path + self.extensions['.WRD'])
 
     @lazy_property
     def phones_fullfreq(self) -> NameRangeSequence:
-        return NameRangeSequence.read_words_from(self.full_path + '.PHN')
+        return NameRangeSequence.read_words_from(self.full_path + self.extensions['.PHN'])
 
     @lazy_property
     def words_df(self) -> pd.DataFrame:
@@ -330,10 +338,14 @@ class Corpus:
         Does nothing but exposes two SubCorpuses: train and test.
         Everything should be 'efficient' as far as lazy-loading can take us.
     '''
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, subdirs : Dict = None) -> None:
+
+        if subdirs is None:
+            subdirs = {'TRAIN':'TRAIN', 'TEST':'TEST'}
+        
         self.path = path
-        self.train = SubCorpus(os.path.join(self.path, 'TRAIN'), 'TRAIN')
-        self.test = SubCorpus(os.path.join(self.path, 'TEST'), 'TEST')
+        self.train = SubCorpus(os.path.join(self.path, subdirs['TRAIN']), 'TRAIN')
+        self.test = SubCorpus(os.path.join(self.path, subdirs['TEST']), 'TEST')
 
     def __str__(self) -> str:
         return 'Corpus {}'.format(self.path,)

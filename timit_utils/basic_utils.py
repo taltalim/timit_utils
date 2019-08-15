@@ -37,7 +37,7 @@ def get_subdirectories_in(path: str) -> List[str]:
     return sorted([name for name in os.listdir(path) if not name.startswith('.')])
 
 def get_sentence_names_in(path: str) -> List[str]:
-    files = sorted([name for name in os.listdir(path) if not name.startswith('.') and name[-4:] == '.WAV'])
+    files = sorted([name for name in os.listdir(path) if not name.startswith('.') and name[-4:].upper() == '.WAV'])
     return [f[:-4] for f in files]
 
 
