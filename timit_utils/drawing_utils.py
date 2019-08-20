@@ -66,6 +66,17 @@ class AudioPanel(Panel):
         ax = self.get_new_axis(figure, gridspecsubplot)
         plt.xlim(xmax = self.audio.shape[0])
         plt.plot(self.audio, 'limegreen', alpha=0.7, linewidth=0.3)
+    
+class SpectrumPanel(Panel):
+    def __init__(self, spectrum: np.ndarray, time_axis: np.ndarray, freq_axis: np.ndarray, show_x_axis: bool = False) -> None:
+        super().__init__(height_ratio=6, width_ratio=10, show_x_axis=show_x_axis)
+        self.spectrum = spectrum
+        self.freq_axis = freq_axis
+        self.time_axis = time_axis
+
+    def render(self, figure: plt.Figure, gridspecsubplot: int, is_top_level: bool = False) -> None:
+        ax = self.get_new_axis(figure, gridspecsubplot)
+        ax.pcolormesh(self.time_axis, self.freq_axis, self.spectrum)
 
 class SignalPanel(Panel):
     def __init__(self, signal: np.ndarray, show_x_axis: bool = False) -> None:
