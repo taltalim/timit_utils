@@ -338,14 +338,14 @@ class Corpus:
         Does nothing but exposes two SubCorpuses: train and test.
         Everything should be 'efficient' as far as lazy-loading can take us.
     '''
-    def __init__(self, path: str, subdirs : Dict = None) -> None:
-
-        if subdirs is None:
-            subdirs = {'TRAIN':'TRAIN', 'TEST':'TEST'}
-        
+    def __init__(self, path: str) -> None:
         self.path = path
-        self.train = SubCorpus(os.path.join(self.path, subdirs['TRAIN']), 'TRAIN')
-        self.test = SubCorpus(os.path.join(self.path, subdirs['TEST']), 'TEST')
+        if os.path.exists(os.path.join(path, 'train')):
+            self.train = SubCorpus(os.path.join(self.path, 'train'), 'TRAIN')
+            self.test = SubCorpus(os.path.join(self.path, 'test'), 'TEST')
+        elif os.path.exists(os.path.join(path, 'TRAIN')):
+            self.train = SubCorpus(os.path.join(self.path, 'TRAIN'), 'TRAIN')
+            self.test = SubCorpus(os.path.join(self.path, 'TEST'), 'TEST')
 
     def __str__(self) -> str:
         return 'Corpus {}'.format(self.path,)
